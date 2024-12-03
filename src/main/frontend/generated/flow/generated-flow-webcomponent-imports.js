@@ -1,5 +1,7 @@
 import { injectGlobalWebcomponentCss } from 'Frontend/generated/jar-resources/theme-util.js';
 
+import '@vaadin/polymer-legacy-adapter/style-modules.js';
+import '@vaadin/vertical-layout/src/vaadin-vertical-layout.js';
 const loadOnDemand = (key) => { return Promise.resolve(0); }
 window.Vaadin = window.Vaadin || {};
 window.Vaadin.Flow = window.Vaadin.Flow || {};
