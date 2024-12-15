@@ -1,8 +1,7 @@
-package com.devops.pipeline_demo;
+package com.devops.pipeline_demo.service;
 
 import com.devops.pipeline_demo.models.User;
 import com.devops.pipeline_demo.repositories.UserRepository;
-import com.devops.pipeline_demo.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;

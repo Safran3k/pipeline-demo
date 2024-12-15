@@ -50,4 +50,14 @@ dependencyManagement {
 
 tasks.named('test') {
 	useJUnitPlatform()
+
+	testLogging {
+		events "passed", "skipped", "failed"
+	}
+
+	reports {
+		junitXml {
+			destination = file("$buildDir/test-results/${test.name}")
+		}
+	}
 }
