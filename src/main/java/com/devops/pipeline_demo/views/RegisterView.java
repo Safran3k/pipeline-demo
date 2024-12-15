@@ -15,6 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class RegisterView extends VerticalLayout {
 
     private final UserService userService;
+    private final TextField usernameField;
+    private final PasswordField passwordField;
 
     @Autowired
     public RegisterView(UserService userService) {
@@ -22,35 +24,62 @@ public class RegisterView extends VerticalLayout {
 
         H3 header = new H3("Register");
 
-        TextField usernameField = new TextField("Username");
-        PasswordField passwordField = new PasswordField("Password");
+        usernameField = new TextField("Username");
+        passwordField = new PasswordField("Password");
 
         usernameField.setWidth("250px");
         passwordField.setWidth("250px");
 
-        Button registerButton = new Button("Register");
-        Button backToLoginButton = new Button("Back to Login");
-
-        registerButton.addClickListener(event -> {
-            String username = usernameField.getValue();
-            String password = passwordField.getValue();
-
-            if (userService.usernameExists(username)) {
-                Notification.show("Username already taken.");
-                return;
-            }
-
-            userService.registerUser(username, password);
-            Notification.show("User registered successfully.");
-        });
+        Button registerButton = new Button("Register", event -> handleRegistration());
+        Button backToLoginButton = new Button("Back to Login", event -> getUI().ifPresent(ui -> ui.navigate("")));
 
         FormLayout formLayout = new FormLayout();
         formLayout.add(usernameField, passwordField);
 
         VerticalLayout layout = new VerticalLayout(header, formLayout, registerButton, backToLoginButton);
         layout.setAlignItems(Alignment.CENTER);
+        layout.setSpacing(true);
+        layout.setPadding(true);
         layout.setSizeFull();
 
         add(layout);
+    }
+
+    private void handleRegistration() {
+        String username = usernameField.getValue();
+        String password = passwordField.getValue();
+
+        String validationError = validateInputs(username, password);
+        if (validationError != null) {
+            Notification.show(validationError);
+            return;
+        }
+
+        if (userService.usernameExists(username)) {
+            Notification.show("Username already taken.");
+            usernameField.clear();
+            return;
+        }
+
+        userService.registerUser(username, password);
+        Notification.show("Registration successful. Redirecting to login page...");
+
+        clearFields();
+        getUI().ifPresent(ui -> ui.navigate(""));
+    }
+
+    private String validateInputs(String username, String password) {
+        if (username.length() < 5) {
+            return "Username must be at least 5 characters long.";
+        }
+        if (password.length() < 8) {
+            return "Password must be at least 8 characters long.";
+        }
+        return null; // No errors
+    }
+
+    private void clearFields() {
+        usernameField.clear();
+        passwordField.clear();
     }
 }

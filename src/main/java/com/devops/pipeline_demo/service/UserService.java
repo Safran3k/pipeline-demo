@@ -19,18 +19,30 @@ public class UserService {
     }
 
     public void registerUser(String username, String password) {
+        if (usernameExists(username)) {
+            throw new IllegalArgumentException("Username already exists.");
+        }
+
         User newUser = new User();
         newUser.setUsername(username);
-        newUser.setPassword(passwordEncoder.encode(password));
+        newUser.setPassword(encodePassword(password));
         userRepository.save(newUser);
     }
 
     public boolean validateUser(String username, String password) {
         User user = userRepository.findByUsername(username);
-        return user != null && passwordEncoder.matches(password, user.getPassword());
+        return user != null && matchPassword(password, user.getPassword());
     }
 
     public boolean usernameExists(String username) {
         return userRepository.existsByUsername(username);
+    }
+
+    private String encodePassword(String password) {
+        return passwordEncoder.encode(password);
+    }
+
+    private boolean matchPassword(String rawPassword, String encodedPassword) {
+        return passwordEncoder.matches(rawPassword, encodedPassword);
     }
 }
